@@ -1,4 +1,4 @@
-
+п»ї
 #include "stdafx.h"
 
 #ifdef __linux__
@@ -25,14 +25,14 @@ L"ID",
 L"Key"
 };
 
-static const wchar_t *g_PropNamesRu[] = { L"Подключено",
-L"РежимПрослушивания",
-L"РегулярноеВыражение",
-L"Версия",
-L"ОшибкаКакСобытие",
-L"ДемонстрационныйРежим",
-L"Идентификатор",
-L"КлючПродукта"
+static const wchar_t *g_PropNamesRu[] = { L"РџРѕРґРєР»СЋС‡РµРЅРѕ",
+L"Р РµР¶РёРјРџСЂРѕСЃР»СѓС€РёРІР°РЅРёСЏ",
+L"Р РµРіСѓР»СЏСЂРЅРѕРµР’С‹СЂР°Р¶РµРЅРёРµ",
+L"Р’РµСЂСЃРёСЏ",
+L"РћС€РёР±РєР°РљР°РєРЎРѕР±С‹С‚РёРµ",
+L"Р”РµРјРѕРЅСЃС‚СЂР°С†РёРѕРЅРЅС‹Р№Р РµР¶РёРј",
+L"РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ",
+L"РљР»СЋС‡РџСЂРѕРґСѓРєС‚Р°"
 };
 
 
@@ -43,11 +43,11 @@ L"ListenMode",
 L"SetRegEx"
 };
 
-static const wchar_t *g_MethodNamesRu[] = { L"Подключиться",
-L"Отключиться",
-L"ВыполнитьКоманду",
-L"РежимПрослушивания",
-L"УстановитьРегулярноеВыражение"
+static const wchar_t *g_MethodNamesRu[] = { L"РџРѕРґРєР»СЋС‡РёС‚СЊСЃСЏ",
+L"РћС‚РєР»СЋС‡РёС‚СЊСЃСЏ",
+L"Р’С‹РїРѕР»РЅРёС‚СЊРљРѕРјР°РЅРґСѓ",
+L"Р РµР¶РёРјРџСЂРѕСЃР»СѓС€РёРІР°РЅРёСЏ",
+L"РЈСЃС‚Р°РЅРѕРІРёС‚СЊР РµРіСѓР»СЏСЂРЅРѕРµР’С‹СЂР°Р¶РµРЅРёРµ"
 };
 
 
@@ -100,7 +100,7 @@ const WCHAR_T* GetClassNames()
 }
 
 
-// Поток обработки Астерсик // код прослушивающего треда
+// РџРѕС‚РѕРє РѕР±СЂР°Р±РѕС‚РєРё РђСЃС‚РµСЂСЃРёРє // РєРѕРґ РїСЂРѕСЃР»СѓС€РёРІР°СЋС‰РµРіРѕ С‚СЂРµРґР°
 static unsigned int _stdcall RecvInThread(void*p)
 {
 	
@@ -426,7 +426,7 @@ bool CAddInNative::GetPropVal(const long lPropNum, tVariant* pvarPropVal)
 //---------------------------------------------------------------------------//
 bool CAddInNative::SetPropVal(const long lPropNum, tVariant* varPropVal)
 {
-	switch (lPropNum) // не забыть, что некоторые свойства не записываются, а только читаются
+	switch (lPropNum) // РЅРµ Р·Р°Р±С‹С‚СЊ, С‡С‚Рѕ РЅРµРєРѕС‚РѕСЂС‹Рµ СЃРІРѕР№СЃС‚РІР° РЅРµ Р·Р°РїРёСЃС‹РІР°СЋС‚СЃСЏ, Р° С‚РѕР»СЊРєРѕ С‡РёС‚Р°СЋС‚СЃСЏ
 	{
 
 	case ePropErrorAsEvent:
@@ -439,7 +439,7 @@ bool CAddInNative::SetPropVal(const long lPropNum, tVariant* varPropVal)
 		}
 	case ePropKey:
 		{
-		if (TV_VT(varPropVal) != VTYPE_PWSTR) // проверяем тип первого параметра
+		if (TV_VT(varPropVal) != VTYPE_PWSTR) // РїСЂРѕРІРµСЂСЏРµРј С‚РёРї РїРµСЂРІРѕРіРѕ РїР°СЂР°РјРµС‚СЂР°
 			return false;
 
 		wchar_t* t_key = 0;
@@ -468,7 +468,7 @@ bool CAddInNative::SetPropVal(const long lPropNum, tVariant* varPropVal)
 //---------------------------------------------------------------------------//
 bool CAddInNative::IsPropReadable(const long lPropNum)
 {
-	return true; // все свойства можно читать
+	return true; // РІСЃРµ СЃРІРѕР№СЃС‚РІР° РјРѕР¶РЅРѕ С‡РёС‚Р°С‚СЊ
 }
 //---------------------------------------------------------------------------//
 bool CAddInNative::IsPropWritable(const long lPropNum)
@@ -614,15 +614,15 @@ bool CAddInNative::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVa
 	case eMethodConnect:
 	{
 		if (!lSizeArray || !paParams)
-			return false; // если нет параметров то ошибка
+			return false; // РµСЃР»Рё РЅРµС‚ РїР°СЂР°РјРµС‚СЂРѕРІ С‚Рѕ РѕС€РёР±РєР°
 
-		if (TV_VT(paParams) != VTYPE_PWSTR) // проверяем тип первого параметра Сервер
+		if (TV_VT(paParams) != VTYPE_PWSTR) // РїСЂРѕРІРµСЂСЏРµРј С‚РёРї РїРµСЂРІРѕРіРѕ РїР°СЂР°РјРµС‚СЂР° РЎРµСЂРІРµСЂ
 			return false;
 
 		wchar_t* server = 0;
 		::convFromShortWchar(&server, TV_WSTR(paParams));
 
-		if (TV_VT(paParams + 1) != VTYPE_PWSTR) // проверяем тип второго параметра Порт
+		if (TV_VT(paParams + 1) != VTYPE_PWSTR) // РїСЂРѕРІРµСЂСЏРµРј С‚РёРї РІС‚РѕСЂРѕРіРѕ РїР°СЂР°РјРµС‚СЂР° РџРѕСЂС‚
 			return false;
 
 		wchar_t* port = 0;
@@ -637,7 +637,7 @@ bool CAddInNative::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVa
 	case eMethodDisconnect:
 		{
 			if (lSizeArray || paParams)
-				return false; // если есть параметры то ошибка
+				return false; // РµСЃР»Рё РµСЃС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ С‚Рѕ РѕС€РёР±РєР°
 
 			TV_VT(pvarRetValue) = VTYPE_BOOL;
 			TV_BOOL(pvarRetValue) = Disconnect();
@@ -649,9 +649,9 @@ bool CAddInNative::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVa
 	case eMethodSendCommand:
 		{
 			if (!lSizeArray || !paParams)
-				return false; // если нет параметров то ошибка
+				return false; // РµСЃР»Рё РЅРµС‚ РїР°СЂР°РјРµС‚СЂРѕРІ С‚Рѕ РѕС€РёР±РєР°
 
-			if (TV_VT(paParams) != VTYPE_PWSTR) // проверяем тип первого параметра
+			if (TV_VT(paParams) != VTYPE_PWSTR) // РїСЂРѕРІРµСЂСЏРµРј С‚РёРї РїРµСЂРІРѕРіРѕ РїР°СЂР°РјРµС‚СЂР°
 				return false;
 
 			wchar_t* msg = 0;
@@ -666,9 +666,9 @@ bool CAddInNative::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVa
 	case eMethodListenMode:
 		{
 			if (!lSizeArray || !paParams)
-				return false; // если нет параметров то ошибка
+				return false; // РµСЃР»Рё РЅРµС‚ РїР°СЂР°РјРµС‚СЂРѕРІ С‚Рѕ РѕС€РёР±РєР°
 
-			if (TV_VT(paParams) != VTYPE_BOOL) // проверяем тип первого параметра
+			if (TV_VT(paParams) != VTYPE_BOOL) // РїСЂРѕРІРµСЂСЏРµРј С‚РёРї РїРµСЂРІРѕРіРѕ РїР°СЂР°РјРµС‚СЂР°
 				return false;
 
 
@@ -682,9 +682,9 @@ bool CAddInNative::CallAsFunc(const long lMethodNum, tVariant* pvarRetValue, tVa
 	case eMethodSetRegEx:
 		{
 			if (!lSizeArray || !paParams)
-				return false; // если нет параметров то ошибка
+				return false; // РµСЃР»Рё РЅРµС‚ РїР°СЂР°РјРµС‚СЂРѕРІ С‚Рѕ РѕС€РёР±РєР°
 
-			if (TV_VT(paParams) != VTYPE_PWSTR) // проверяем тип первого параметра
+			if (TV_VT(paParams) != VTYPE_PWSTR) // РїСЂРѕРІРµСЂСЏРµРј С‚РёРї РїРµСЂРІРѕРіРѕ РїР°СЂР°РјРµС‚СЂР°
 				return false;
 			try
 			{
@@ -860,43 +860,43 @@ bool CAddInNative::SendEvent(wchar_t* msg, wchar_t* Data)
 				switch (e.code())
 				{
 				case std::regex_constants::error_collate:
-					res = m_iConnect->ExternalEvent(wsName, L"Некорректная Строка Regex", L"error_collate");
+					res = m_iConnect->ExternalEvent(wsName, L"РќРµРєРѕСЂСЂРµРєС‚РЅР°СЏ РЎС‚СЂРѕРєР° Regex", L"error_collate");
 					return res;
 				case std::regex_constants::error_ctype:
-					res = m_iConnect->ExternalEvent(wsName, L"Некорректная Строка Regex", L"error_ctype");
+					res = m_iConnect->ExternalEvent(wsName, L"РќРµРєРѕСЂСЂРµРєС‚РЅР°СЏ РЎС‚СЂРѕРєР° Regex", L"error_ctype");
 					return res;
 				case std::regex_constants::error_escape:
-					res = m_iConnect->ExternalEvent(wsName, L"Некорректная Строка Regex", L"error_escape");
+					res = m_iConnect->ExternalEvent(wsName, L"РќРµРєРѕСЂСЂРµРєС‚РЅР°СЏ РЎС‚СЂРѕРєР° Regex", L"error_escape");
 					return res;
 				case std::regex_constants::error_backref:
-					res = m_iConnect->ExternalEvent(wsName, L"Некорректная Строка Regex", L"error_backref");
+					res = m_iConnect->ExternalEvent(wsName, L"РќРµРєРѕСЂСЂРµРєС‚РЅР°СЏ РЎС‚СЂРѕРєР° Regex", L"error_backref");
 					return res;
 				case std::regex_constants::error_brack:
-					res = m_iConnect->ExternalEvent(wsName, L"Некорректная Строка Regex", L"error_brack");
+					res = m_iConnect->ExternalEvent(wsName, L"РќРµРєРѕСЂСЂРµРєС‚РЅР°СЏ РЎС‚СЂРѕРєР° Regex", L"error_brack");
 					return res;
 				case std::regex_constants::error_paren:
-					res = m_iConnect->ExternalEvent(wsName, L"Некорректная Строка Regex", L"error_paren");
+					res = m_iConnect->ExternalEvent(wsName, L"РќРµРєРѕСЂСЂРµРєС‚РЅР°СЏ РЎС‚СЂРѕРєР° Regex", L"error_paren");
 					return res;
 				case std::regex_constants::error_brace:
-					res = m_iConnect->ExternalEvent(wsName, L"Некорректная Строка Regex", L"error_brace");
+					res = m_iConnect->ExternalEvent(wsName, L"РќРµРєРѕСЂСЂРµРєС‚РЅР°СЏ РЎС‚СЂРѕРєР° Regex", L"error_brace");
 					return res;
 				case std::regex_constants::error_badbrace:
-					res = m_iConnect->ExternalEvent(wsName, L"Некорректная Строка Regex", L"error_badbrace");
+					res = m_iConnect->ExternalEvent(wsName, L"РќРµРєРѕСЂСЂРµРєС‚РЅР°СЏ РЎС‚СЂРѕРєР° Regex", L"error_badbrace");
 					return res;
 				case std::regex_constants::error_range:
-					res = m_iConnect->ExternalEvent(wsName, L"Некорректная Строка Regex", L"error_range");
+					res = m_iConnect->ExternalEvent(wsName, L"РќРµРєРѕСЂСЂРµРєС‚РЅР°СЏ РЎС‚СЂРѕРєР° Regex", L"error_range");
 					return res;
 				case std::regex_constants::error_space:
-					res = m_iConnect->ExternalEvent(wsName, L"Некорректная Строка Regex", L"error_space");
+					res = m_iConnect->ExternalEvent(wsName, L"РќРµРєРѕСЂСЂРµРєС‚РЅР°СЏ РЎС‚СЂРѕРєР° Regex", L"error_space");
 					return res;
 				case std::regex_constants::error_badrepeat:
-					res = m_iConnect->ExternalEvent(wsName, L"Некорректная Строка Regex", L"error_badrepeat");
+					res = m_iConnect->ExternalEvent(wsName, L"РќРµРєРѕСЂСЂРµРєС‚РЅР°СЏ РЎС‚СЂРѕРєР° Regex", L"error_badrepeat");
 					return res;
 				case std::regex_constants::error_complexity:
-					res = m_iConnect->ExternalEvent(wsName, L"Некорректная Строка Regex", L"error_complexity");
+					res = m_iConnect->ExternalEvent(wsName, L"РќРµРєРѕСЂСЂРµРєС‚РЅР°СЏ РЎС‚СЂРѕРєР° Regex", L"error_complexity");
 					return res;
 				case std::regex_constants::error_stack:
-					res = m_iConnect->ExternalEvent(wsName, L"Некорректная Строка Regex", L"error_stack");
+					res = m_iConnect->ExternalEvent(wsName, L"РќРµРєРѕСЂСЂРµРєС‚РЅР°СЏ РЎС‚СЂРѕРєР° Regex", L"error_stack");
 					return res;
 
 				default:
@@ -918,7 +918,7 @@ bool CAddInNative::SendEvent(wchar_t* msg, wchar_t* Data)
 }
 
 
-// библиотека WINSOCK традиционно возвращает 0 (ноль) если выполнение функции успешно
+// Р±РёР±Р»РёРѕС‚РµРєР° WINSOCK С‚СЂР°РґРёС†РёРѕРЅРЅРѕ РІРѕР·РІСЂР°С‰Р°РµС‚ 0 (РЅРѕР»СЊ) РµСЃР»Рё РІС‹РїРѕР»РЅРµРЅРёРµ С„СѓРЅРєС†РёРё СѓСЃРїРµС€РЅРѕ
 bool CAddInNative::Connect(wchar_t* server, wchar_t* port)
 {
 	WSADATA wsaData;
@@ -997,7 +997,7 @@ bool CAddInNative::Connect(wchar_t* server, wchar_t* port)
 	
 	SendEvent(L"Connected", server_port);
 
-	return true; // все ОК
+	return true; // РІСЃРµ РћРљ
 }
 
 bool CAddInNative::Disconnect()
@@ -1120,7 +1120,7 @@ bool CAddInNative::setRegEx(wchar_t* str_regex)
 }
 
 
-// обработчики псевдо-событий
+// РѕР±СЂР°Р±РѕС‚С‡РёРєРё РїСЃРµРІРґРѕ-СЃРѕР±С‹С‚РёР№
 
 void CAddInNative::OnDisconnect()
 {
@@ -1145,7 +1145,7 @@ void CAddInNative::OnError(long scode, wchar_t *descr)
 
 
 	if (m_iConnect)
-		m_iConnect->AddError(ADDIN_E_FAIL, wsName, descr, scode); //Если scode имеет не нулевое значение – будет сгенерировано исключение, которое может быть перехвачено и обработано средствами встроенного языка 1С:Предприятия.
+		m_iConnect->AddError(ADDIN_E_FAIL, wsName, descr, scode); //Р•СЃР»Рё scode РёРјРµРµС‚ РЅРµ РЅСѓР»РµРІРѕРµ Р·РЅР°С‡РµРЅРёРµ вЂ“ Р±СѓРґРµС‚ СЃРіРµРЅРµСЂРёСЂРѕРІР°РЅРѕ РёСЃРєР»СЋС‡РµРЅРёРµ, РєРѕС‚РѕСЂРѕРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїРµСЂРµС…РІР°С‡РµРЅРѕ Рё РѕР±СЂР°Р±РѕС‚Р°РЅРѕ СЃСЂРµРґСЃС‚РІР°РјРё РІСЃС‚СЂРѕРµРЅРЅРѕРіРѕ СЏР·С‹РєР° 1РЎ:РџСЂРµРґРїСЂРёСЏС‚РёСЏ.
 
 
 }
