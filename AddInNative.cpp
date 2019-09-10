@@ -19,20 +19,14 @@ static const wchar_t *g_PropNames[] = { L"Connected",
 L"Listen",
 L"RegEx",
 L"Version",
-L"ErrorAsEvent",
-L"IsDemo",
-L"ID",
-L"Key"
+L"ErrorAsEvent"
 };
 
 static const wchar_t *g_PropNamesRu[] = { L"Подключено",
 L"РежимПрослушивания",
 L"РегулярноеВыражение",
 L"Версия",
-L"ОшибкаКакСобытие",
-L"ДемонстрационныйРежим",
-L"Идентификатор",
-L"КлючПродукта"
+L"ОшибкаКакСобытие"
 };
 
 
@@ -75,7 +69,7 @@ long GetClassObject(const wchar_t* wsName, IComponentBase** pInterface)
 	if (!*pInterface)
 	{
 		*pInterface = new CAddInNative();
-		return (long)*pInterface;
+		return (long)*pInterface; // Сама 1С так сказала делать!!!
 	}
 	return 0;
 }
@@ -106,15 +100,11 @@ static unsigned int _stdcall RecvInThread(void*p)
 	
 	CAddInNative *tcpCl = (CAddInNative*)p;
 
-	int RCVBUFSIZE = 65536;
+	int RCVBUFSIZE = 65536; //ToDo Need Real Buffer
 	
 	char *buf = new char[RCVBUFSIZE];
-	//char buf[RCVBUFSIZE] = {0};
 	int recived = 0;
 	bool disconnect = false;
-
-	std::regex demo_r("[\\s\\-]\\d{5,5}");
-	std::string demo_repl("*******");
 
 	std::string s1 = "";
 
@@ -140,16 +130,9 @@ static unsigned int _stdcall RecvInThread(void*p)
 					std::string nstr(s1.substr(0, cutAt + SEPLN.length()));
 					s1 = s1.substr(cutAt + SEPLN.length());
 
-					if (tcpCl->isDemo && tcpCl->count_event >= 100)
-					{
-						tcpCl->count_event = 101;
-						std::string demo_result = std::regex_replace(nstr, demo_r, demo_repl);
-						res = CHAR_2_WCHAR((char*)demo_result.c_str());
-					}
-					else
-					{
-						res = CHAR_2_WCHAR((char*)nstr.c_str());
-					}
+					
+					res = CHAR_2_WCHAR((char*)nstr.c_str());
+					
 
 					tcpCl->SendEvent(L"Received", res);
 				}
@@ -218,22 +201,7 @@ bool CAddInNative::Init(void* pConnection)
 		return false;
 	}
 	
-	DWORD initDate;
-	wchar_t* productID = new wchar_t[100];
-	ULONG len = 100;
-
-	if (GetValueFromKey(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\Windows NT\\CurrentVersion", L"ProductId", productID, len)
-		&& (GetValueFromKey(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\Windows NT\\CurrentVersion", L"InstallDate", &initDate, sizeof(initDate))))
-	{
-		SetComputerID(productID, initDate);
-	}
-	
 	connected = false;
-	isDemo = true;
-
-	
-	delete[] productID;
-	
 		
 	return true;
 }
@@ -357,7 +325,7 @@ bool CAddInNative::GetPropVal(const long lPropNum, tVariant* pvarPropVal)
 
 	case ePropVersion:
 		{
-		str_var = L"1.0.1.11";
+		str_var = L"1.0.1.20";
 		size_str_var = wcslen(str_var);
 
 		if (m_iMemory)
@@ -375,44 +343,6 @@ bool CAddInNative::GetPropVal(const long lPropNum, tVariant* pvarPropVal)
 		{
 		TV_VT(pvarPropVal) = VTYPE_BOOL;
 		TV_I4(pvarPropVal) = errorAsEvent;
-		break;
-		}
-	case ePropIsDemo:
-		{
-		TV_VT(pvarPropVal) = VTYPE_BOOL;
-		TV_I4(pvarPropVal) = isDemo;
-		break;
-		}
-	case ePropID:
-	{
-		str_var = computer_id;
-		size_str_var = wcslen(str_var);
-
-		if (m_iMemory)
-		{
-			if (m_iMemory->AllocMemory((void**)&pvarPropVal->pwstrVal, size_str_var * sizeof(WCHAR_T)))
-			{
-				::convToShortWchar(&pvarPropVal->pwstrVal, str_var, size_str_var);
-				pvarPropVal->strLen = size_str_var;
-				TV_VT(pvarPropVal) = VTYPE_PWSTR;
-			}
-		}
-		break;
-	}
-	case ePropKey:
-		{
-		str_var = key;
-		size_str_var = wcslen(str_var);
-
-		if (m_iMemory)
-		{
-			if (m_iMemory->AllocMemory((void**)&pvarPropVal->pwstrVal, size_str_var * sizeof(WCHAR_T)))
-			{
-				::convToShortWchar(&pvarPropVal->pwstrVal, str_var, size_str_var);
-				pvarPropVal->strLen = size_str_var;
-				TV_VT(pvarPropVal) = VTYPE_PWSTR;
-			}
-		}
 		break;
 		}
 	default:
@@ -437,26 +367,6 @@ bool CAddInNative::SetPropVal(const long lPropNum, tVariant* varPropVal)
 		return true;
 		break;
 		}
-	case ePropKey:
-		{
-		if (TV_VT(varPropVal) != VTYPE_PWSTR) // проверяем тип первого параметра
-			return false;
-
-		wchar_t* t_key = 0;
-		convFromShortWchar(&t_key, varPropVal->pwstrVal);
-		key = t_key;
-		//size_t lenkey = wcslen(key);
-
-		//long res = 1;
-		//for (unsigned int i = 0; i < lenkey - 1; i++)
-		//{
-		//	unsigned int a = (unsigned int)key[i];
-		//	res = res*a;
-		//}
-		//_ltow(res, key, 20);
-		return true;
-		break;
-		}
 	default:
 		{
 		return false;
@@ -478,10 +388,6 @@ bool CAddInNative::IsPropWritable(const long lPropNum)
 
 	case ePropErrorAsEvent:
 		return true;
-	case ePropKey:
-		return true;
-	case ePropIsDemo:
-		return false;
 	default:
 		return false;
 	}
@@ -848,7 +754,6 @@ bool CAddInNative::SendEvent(wchar_t* msg, wchar_t* Data)
 
 				if (std::regex_search(Data, r))
 				{
-					if (isDemo) { count_event = count_event + 1; }
 					res = m_iConnect->ExternalEvent(wsName, msg, Data);
 
 					return res;
@@ -908,9 +813,8 @@ bool CAddInNative::SendEvent(wchar_t* msg, wchar_t* Data)
 		}
 		else
 		{
-			if (isDemo) { count_event = count_event + 1; }
-				bool res = m_iConnect->ExternalEvent(wsName, msg, Data);
-				return res;
+			bool res = m_iConnect->ExternalEvent(wsName, msg, Data);
+			return res;
 		}
 	}
 
@@ -1047,8 +951,6 @@ bool CAddInNative::Disconnect()
 
 bool CAddInNative::ListenMode(int flag)
 {
-	if(_wcsicmp(valid_key, key) == 0) { isDemo = false; } else { isDemo = true; }
-
 	if (flag == 1)
 	{
 		
@@ -1156,71 +1058,6 @@ wchar_t* CAddInNative::getErrorDescription(DWORD dwErr)
 	::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, dwErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
 	LPWSTR str = (LPWSTR)lpMsgBuf;
 	return str;
-}
-
-// --------------------------------------------------------------Innova-IT ------------------------------------------------------------------------//
-bool CAddInNative::GetValueFromKey(HKEY hKey, LPCWSTR lpSubKey, LPCWSTR lpValue, LPVOID pBuffer, ULONG uSize)
-{
-	HKEY hTargetKey;
-	LONG lRet;
-	//ULONG uSz = uSize;
-
-	lRet = RegOpenKeyEx(hKey, lpSubKey, 0, KEY_READ | KEY_WOW64_64KEY, &hTargetKey);
-
-	if (lRet != ERROR_SUCCESS) return FALSE;
-
-	lRet = RegQueryValueEx(hTargetKey, lpValue, 0, 0, (LPBYTE)pBuffer, &uSize);
-
-	if (lRet != ERROR_SUCCESS)
-	{
-		RegCloseKey(hTargetKey);
-		return FALSE;
-	}
-
-	RegCloseKey(hTargetKey);
-	return TRUE;
-}
-
-// --------------------------------------------------------------Innova-IT ------------------------------------------------------------------------//
-void CAddInNative::SetComputerID(wchar_t * id, DWORD initDate)
-{
-
-	wcscpy_s(computer_id, id);
-	wcsncat_s(computer_id, L"-", sizeof(L"-"));
-	wchar_t strDate[20] = { 0 };
-
-	swprintf_s(strDate, L"%i", (int)initDate);
-
-
-	wcsncat_s(computer_id, strDate, 10);
-
-	for (int i = 1; computer_id[i - 1] != 0; i++)
-	{
-		if (computer_id[i - 1] > 47 && computer_id[i - 1] <= 57)
-		{
-			if (i <= 10)
-				valid_key[i - 1] = (wchar_t)computer_id[i - 1] + 20 + i;
-			else if (i>10 && i <= 20)
-				valid_key[i - 1] = (wchar_t)computer_id[i - 1] + 65 - i / 2;
-			else if (i >= 21 && i <= 35)
-				valid_key[i - 1] = (wchar_t)computer_id[i - 1] + 33 - i / 3;
-		}
-		else if (computer_id[i - 1] > 64 && computer_id[i - 1] <= 90)
-		{
-			if (i <= 10)
-				valid_key[i - 1] = (wchar_t)computer_id[i - 1] + 32 - i;
-			else if (i > 10 && i <= 20)
-			{
-				if (computer_id[i - 1] < 77) { valid_key[i - 1] = (wchar_t)computer_id[i - 1] + i / 2; }
-				else { valid_key[i - 1] = (wchar_t)valid_key[i - 1] - i / 2; }
-			}
-			else if (i >= 21 && i <= 35) { valid_key[i - 1] = (wchar_t)computer_id[i - 1]; }
-		}
-
-		else { valid_key[i - 1] = (wchar_t)computer_id[i - 1]; }
-	}
-
-	return;
 }
 
 // --------------------------------------------------------------Innova-IT ------------------------------------------------------------------------//
