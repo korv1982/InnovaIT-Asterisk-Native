@@ -1,4 +1,4 @@
-
+п»ї
 #ifndef __ADDINNATIVE_H__
 #define __ADDINNATIVE_H__
 
@@ -10,8 +10,6 @@
 #include "AddInDefBase.h"
 #include "IMemoryManager.h"
 
-
-std::vector<std::string> resplit(const std::string & s, std::string rgx_str);
 char* WCHAR_2_CHAR(wchar_t *in_str);
 wchar_t* CHAR_2_WCHAR(char *in_str);
 
@@ -28,9 +26,6 @@ public:
 		ePropRegEx,
 		ePropVersion,
 		ePropErrorAsEvent,
-		ePropIsDemo,
-		ePropID,
-		ePropKey,
 		ePropLast      // Always last
 	};
 
@@ -43,9 +38,10 @@ public:
 		eMethodSetRegEx,
 		eMethodLast      // Always last
 	};
+	
 	//*Innova-it
 
-	// --------------------------------------------------Стандартные объявления 1С
+	// --------------------------------------------------РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РѕР±СЉСЏРІР»РµРЅРёСЏ 1РЎ
 	CAddInNative(void);
 	virtual ~CAddInNative();
 	// IInitDoneBase
@@ -73,15 +69,13 @@ public:
 	operator IComponentBase*() { return (IComponentBase*)this; }
 	// LocaleBase
 	virtual void ADDIN_API SetLocale(const WCHAR_T* loc);
-	//  -----------------------------------Конец стандартные объявления 1С
+	//  -----------------------------------РљРѕРЅРµС† СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РѕР±СЉСЏРІР»РµРЅРёСЏ 1РЎ
 
 
 	
 	bool connected;
 	bool listen;
-	bool isDemo;                      // Демо режим
-	int count_event = 0;                  // Кол-во сообщений до ДЕМО режима
-
+	
 	bool		SendEvent(wchar_t *msg, wchar_t *Data);
 	
 	void		OnDisconnect();
@@ -90,7 +84,7 @@ public:
 
 	SOCKET ConnectSocket;
 	HANDLE hTh;
-
+	wchar_t* regEx = L"";
 	
 private:
 	wchar_t* wsName = L"InnovaIT-Asterisk-Native";
@@ -112,17 +106,6 @@ private:
 	wchar_t* getErrorDescription(DWORD dwErr);
 		
 	bool errorAsEvent;
-	wchar_t* regEx =L"";
 		
-	wchar_t* key = L"";
-	// Защита
-	wchar_t  computer_id[35] = { 0 }; // ID компьютера
-	wchar_t  valid_key[35] = { 0 };   // Ответ
-	
-	
-	bool GetValueFromKey(HKEY hKey, LPCWSTR lpSubKey, LPCWSTR lpValue, LPVOID pBuffer, ULONG uSize);
-	void SetComputerID(wchar_t* id, DWORD date);
-	// *Защита
-	
 };
 #endif //__ADDINNATIVE_H__
